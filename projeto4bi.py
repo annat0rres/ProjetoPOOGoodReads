@@ -1,64 +1,112 @@
-#testes - última atualização: 21/01/2025 - Anna Clara
-
 from tkinter import *
 import customtkinter as ctk
-from PIL import Image, ImageTk
 
+# ! Projeto de PEOO - Anna Clara, Enzo Riquelme, Hellen Vitória e Kauã Angelo
 
-#config. da aparência
+# * config. da aparência
 ctk.set_appearance_mode('light')
 
-#janela principal
+#* janela principal
 app = ctk.CTk()
 app.title('Goodreads')
 app.geometry('500x500')
 app.resizable(False, False)
 
-#janela do login
+# * janela do login
 def fazer_login():
 	app.destroy()
-	janela2 = ctk.CTk()
-	janela2.title('Log-in')
-	janela2.geometry('500x500')
-	janela2.resizable(False, False)
-	# label_nome = tk.Label(janela2, text = "Nome")
-	# label_nome.grid(row = 0, column = 0 )
-	# botao_voltar = tk.Button(janela2, text = 'Fechar a janela2', command = janela2.destroy)
-	# botao_volta.grid(row = 1, column = 0)
-	# labels da janela2:
-	user = ctk.CTkLabel(janela2, text='Usuário', font=("Times New Roman", 16, 'bold'))
-	user.pack(pady=(200, 5), padx=2)
-	user.entry = ctk.CTkEntry(janela2, placeholder_text="Digite seu nome de usuário aqui", width = 202)
-	user.entry.pack()
-	password = ctk.CTkLabel(janela2, text='Senha', font=("Times New Roman", 16, 'bold'))
-	password.pack(pady=(5, 5), padx=2)
-	#entry - usuário 
-	password.entry = ctk.CTkEntry(janela2, placeholder_text="Digite a senha da sua conta aqui", width = 202)
-	password.entry.pack()
-	janela2.mainloop()
+	janelalogin = ctk.CTk()
+	janelalogin.title('Log-in')
+	janelalogin.geometry('500x500')
+	janelalogin.resizable(False, False)
+
+	#? funcionalidade a definir se será utilizada
+	# ? label_nome = tk.Label(janela2, text = "Nome")
+	# ? label_nome.grid(row = 0, column = 0 )
+	# ? botao_voltar = tk.Button(janela2, text = 'Fechar a janela2', command = janela2.destroy)
+	# ? botao_volta.grid(row = 1, column = 0)
+
+	# * labels e entry´s
+	user = ctk.CTkLabel(janelalogin, text='Usuário', font=("Courier", 16, 'bold'))
+	user.pack(pady = (200, 5))
+	user_entry = ctk.CTkEntry(janelalogin, placeholder_text="Digite seu nome de usuário aqui", width = 202)
+	user_entry.pack()
+	password = ctk.CTkLabel(janelalogin, text='Senha', font=("Courier", 16, 'bold'))
+	password.pack() 
+	password_entry = ctk.CTkEntry(janelalogin, placeholder_text="Digite a senha da sua conta aqui", width = 202, show = '*')
+	password_entry.pack()
+
+	#! IREI TESTAR A BIBLIOTECA PANDAS
+	# resultado_login = ctk.CTkLabel(janelalogin, text = '')
+	# resultado_login.pack(pady = (1, 5))
+
+	# * funcionalidades da tela de log-in
+	def validar_login():
+		usuario = user_entry.get()
+		senha = password_entry.get()
+
+		#! IREI TESTAR A BIBLIOTECA PANDAS
+		# #verificar:
+		# if usuario == 'clraweb' and senha == '08booklover':
+		# 	resultado_login.configure(text = 'Deu certo! Aguarde', text_color = 'green', font = ('Courier', 12))
+		# elif usuario == '' or senha == '':
+		# 	resultado_login.configure(text = 'Preencha os campos', text_color = 'blue', font = ('Courier', 12))
+		# else:
+		# 	resultado_login.configure(text = 'Eita, algo deu errado!', text_color = 'red', font = ('Courier', 12))
+
+	# * botão para validar o log-in
+	validar = ctk.CTkButton(janelalogin, text='Validar', command= validar_login, fg_color='black', hover_color='gray')
+	validar.pack(pady=(1, 5))
+
+	janelalogin.mainloop()
+
+# * janela do cadastro
+def fazer_cadastro():
+	app.destroy()
+	janelacadast = ctk.CTk()
+	janelacadast.title('Cadastro')
+	janelacadast.geometry('500x500')
+	janelacadast.resizable(False, False)
+	# ? janelacadast.after(1, lambda:janelacadast.state('zoomed')) - pra abrir tela maximizada 
+
+	# * labels e entries
+	nome = ctk.CTkLabel(janelacadast, text='Nome:', font=("Courier", 16, 'bold'))
+	nome.pack(pady = (140, 2))
+	nome_entry = ctk.CTkEntry(janelacadast, placeholder_text= '  Como podemos te chamar?', width = 180)
+	nome_entry.pack()
+	user_cadastro = ctk.CTkLabel(janelacadast, text='Usuário:', font=("Courier", 16, 'bold'))
+	user_cadastro.pack()
+	usercad_entry= ctk.CTkEntry(janelacadast, placeholder_text= ' Escolha um nome de usuário', width = 185)
+	usercad_entry.pack()
+	passw_cadastro = ctk.CTkLabel(janelacadast, text='Senha:', font=("Courier", 16, 'bold'))
+	passw_cadastro.pack()
+	passwc_entry = ctk.CTkEntry(janelacadast, placeholder_text= ' Escolha sua senha!', width = 130)
+	passwc_entry.pack()
+
+	'''
+	# todo: INSERÇÃO DA BIBLIOTECA PANDAS PARA CRIAR CONTA
 
 
-# botao = tk.Button(janela, text = 'Ir para nova janela', command = abrir_janela)
-# botao.grid(row = 0, column = 0)
+	criação = ctk.CTkButton(janelacadast, text = 'Criar conta', command=criar_conta, fg_color ='black', hover_color = 'gray')
+	criação.pack(pady = (15, 5))
 
-#label
-logo = Image.open("logo.png")  # Usando PIL para abrir a imagem
-logo = logo.resize((250, 250))  # Ajuste o tamanho da imagem, se necessário
-logo_img = ImageTk.PhotoImage(logo)  # Convertendo para o formato necessário pelo tkinter/CTk
-logo_label = ctk.CTkLabel(app, image=logo_img, text='')  # Passando a imagem convertida
-inicio = ctk.CTkLabel(app, text='Bem vindo ao Goodreads!', font=("Times New Roman", 20, 'bold'))
-subt = ctk.CTkLabel(app, text='Já tem uma conta?', font=("Times New Roman", 16, 'bold'))
+	'''
 
-#oorganizando os labels
-logo_label.pack(pady = 50, padx = 1)
-inicio.pack(padx=2)  
-subt.pack(padx=2)
+	janelacadast.mainloop()
 
-#buttons
-botao_login = ctk.CTkButton(app, text='Fazer login', command= fazer_login, fg_color='blue', hover_color='black')
-botao_login.pack(pady=(0, 10), padx=2)
 
-botao_cadastrar = ctk.CTkButton(app, text='Criar conta', command=lambda: print("Iniciando cadastro"), fg_color='blue', hover_color='black')
-botao_cadastrar.pack(pady=(0, 20), padx=2)
+# * TELA INICIAL - LOGIN/CADASTRO
+inicio = ctk.CTkLabel(app, text='Bem vindo ao Goodreads!', font=("Courier", 20, 'bold'))
+subt = ctk.CTkLabel(app, text='Já tem uma conta?', font=("Courier", 18, 'bold'))
+
+inicio.pack(pady = (200, 0), anchor = 'center')  
+subt.pack(anchor = 'center')
+
+# * botões de login/cadastro
+botao_login = ctk.CTkButton(app, text='Fazer login', font= ('Lexend', 12), command= fazer_login, fg_color='black', hover_color='gray')
+botao_login.pack(pady=(0, 10), anchor='center')
+
+botao_cadastrar = ctk.CTkButton(app, text='Criar conta', font= ('Lexend', 12), command= fazer_cadastro, fg_color='black', hover_color='gray')
+botao_cadastrar.pack(pady=(0, 50), anchor='center')
 
 app.mainloop()
