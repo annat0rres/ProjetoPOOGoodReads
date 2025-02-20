@@ -1,0 +1,238 @@
+from tkinter import *
+import customtkinter as ctk
+from customtkinter import CTk
+from CustomTkinterMessagebox import CTkMessagebox
+from customtkinter import filedialog
+from PIL import Image, ImageTk, ImageDraw
+import pandas as pd
+
+# ! Projeto de PEOO - Anna Clara, Enzo Riquelme, Hellen Vitória e Kauã Angelo
+
+# * aparência
+ctk.set_appearance_mode('light')
+
+
+#* janela principal
+def janelainicial(): #parte de ANNA
+	app = ctk.CTk()
+	app.title('Goodreads')
+	app.geometry('500x500')
+	app.resizable(False, False)
+
+	# * janela do cadastro
+	def fazer_cadastro():
+		app.destroy()
+		janelacadast = ctk.CTk()
+		janelacadast.title('Cadastro')
+		janelacadast.geometry('500x500')
+		janelacadast.resizable(False, False)
+		# ? janelacadast.after(1, lambda:janelacadast.state('zoomed')) - pra abrir tela maximizada 
+
+		# * labels e entries
+		nome = ctk.CTkLabel(janelacadast, text='Nome:', font=("Courier", 16, 'bold'))
+		nome.pack(pady = (125, 2))
+		nome_entry = ctk.CTkEntry(janelacadast, placeholder_text= '  Como podemos te chamar?', width = 180)
+		nome_entry.pack()
+		user_cadastro = ctk.CTkLabel(janelacadast, text='Usuário:', font=("Courier", 16, 'bold'))
+		user_cadastro.pack()
+		usercad_entry= ctk.CTkEntry(janelacadast, placeholder_text= ' Escolha um nome de usuário', width = 185)
+		usercad_entry.pack()
+		passw_cadastro = ctk.CTkLabel(janelacadast, text='Senha:', font=("Courier", 16, 'bold'))
+		passw_cadastro.pack()
+		passwc_entry = ctk.CTkEntry(janelacadast, placeholder_text= ' Escolha sua senha!', width = 130, show = '●')
+		passwc_entry.pack()
+
+		# todo: INSERÇÃO DA BIBLIOTECA PANDAS PARA CRIAR CONTA
+		def criar_conta():
+			usuarios = "cadastros.xlsx"
+			usuarios_cad = pd.read_excel(usuarios)
+
+			name = nome_entry.get()
+			user = usercad_entry.get()
+			passw = passwc_entry.get()
+
+			novo_cad = [name, user, passw]  # os valores devem estar na mesma ordem das colunas
+
+			# adicionando ao DataFrame
+			usuarios_cad.loc[len(usuarios)] = novo_cad
+			usuarios_cad.to_excel(usuarios, index=False) #index:False serve pra não add indice na tabela, algo que é padrão do pandas
+
+
+		criação = ctk.CTkButton(janelacadast, text = 'Criar conta', command=criar_conta, fg_color ='black', hover_color = 'gray')
+		criação.pack(pady = (12, 5))
+		
+		def voltar_inicio():
+			janelacadast.destroy()
+			janelainicial()
+
+		voltar = ctk.CTkButton(janelacadast, text= 'Página inicial', command= voltar_inicio, fg_color ='black', hover_color = 'gray')
+		voltar.pack(pady = (5, 3))
+
+		janelacadast.mainloop()
+
+	# * janela do login
+	def fazer_login():
+		app.destroy()
+		janelalogin = ctk.CTk()
+		janelalogin.title('Log-in')
+		janelalogin.geometry('500x500')
+		janelalogin.resizable(False, False)
+
+		#? funcionalidade a definir se será utilizada
+		# ? label_nome = tk.Label(janela2, text = "Nome")
+		# ? label_nome.grid(row = 0, column = 0 )
+		# ? botao_voltar = tk.Button(janela2, text = 'Fechar a janela2', command = janela2.destroy)
+		# ? botao_volta.grid(row = 1, column = 0)
+
+		# * labels e entry´s
+		user = ctk.CTkLabel(janelalogin, text='Usuário', font=("Courier", 16, 'bold'))
+		user.pack(pady = (150, 5))
+		user_entry = ctk.CTkEntry(janelalogin, placeholder_text="Digite seu nome de usuário aqui", width = 202)
+		user_entry.pack()
+		password = ctk.CTkLabel(janelalogin, text='Senha', font=("Courier", 16, 'bold'))
+		password.pack() 
+		password_entry = ctk.CTkEntry(janelalogin, placeholder_text="Digite a senha da sua conta aqui", width = 202, show = '●')
+		password_entry.pack()
+
+
+		# * funcionalidades da tela de log-in
+		def validar_login():
+			usuarios = "cadastros.xlsx"
+			usuarios_cad = pd.read_excel(usuarios, dtype = str)
+
+			user_input = user_entry.get().strip()
+			password_input = str((password_entry).get()).strip()
+
+			if user_input in usuarios_cad['USUARIO'].values:
+				usuario_dados = usuarios_cad[usuarios_cad['USUARIO'] == user_input] #filtra a linha com o valor que queremos
+
+				if not usuario_dados.empty:
+					senha_correta = str(usuario_dados.iloc[0]['SENHA']).strip()
+
+					if password_input == senha_correta:
+						janelaprincipal(usuario_dados) #! aqui ele vai ter que abrir a página específica da pessoa, parte de KUÃ
+
+					else:
+						CTkMessagebox.messagebox(title='Aviso', text='Senha Incorreta', button_text='Tentar novamente') 
+				
+				else:
+					CTkMessagebox.messagebox(title='Aviso', text='Esse usuário não existe', button_text='Faça seu cadastro', fg_color = 'black')
+				
+			else:
+				CTkMessagebox.messagebox(title='Aviso', text='Usuário não encontrado', button_text='Tentar novamente') 
+				
+
+		# * botão para validar o log-in
+		validar = ctk.CTkButton(janelalogin, text='Validar', command= validar_login, fg_color='black', hover_color='gray')
+		validar.pack(pady=(15, 5))
+
+		def voltar():
+			janelalogin.destroy()
+			janelainicial()
+		voltar = ctk.CTkButton(janelalogin, text='Página inicial', command= voltar, fg_color='black', hover_color='gray')
+		voltar.pack(pady=(5, 3))
+
+
+		janelalogin.mainloop()
+
+
+	# * TELA INICIAL - LOGIN/CADASTRO
+	inicio = ctk.CTkLabel(app, text='Bem vindo ao Goodreads!', font=("Courier", 20, 'bold'))
+	subt = ctk.CTkLabel(app, text='Já tem uma conta?', font=("Courier", 18, 'bold'))
+
+	inicio.pack(pady = (200, 0), anchor = 'center')  
+	subt.pack(anchor = 'center')
+
+	# * botões de login/cadastro
+	botao_login = ctk.CTkButton(app, text='Fazer login', font= ('Lexend', 12), command= fazer_login, fg_color='black', hover_color='gray')
+	botao_login.pack(pady=(0, 10), anchor='center')
+
+	botao_cadastrar = ctk.CTkButton(app, text='Criar conta', font= ('Lexend', 12), command= fazer_cadastro, fg_color='black', hover_color='gray')
+	botao_cadastrar.pack(pady=(0, 50), anchor='center')
+
+	app.mainloop()
+
+def janelaprincipal(usuario_dados): #parte de KAUÃ
+	
+	def account_window():
+		segundajanela = ctk.CTkToplevel()
+		segundajanela.title("Conta")
+		segundajanela.geometry(f"500x500+{posix}+{posiy}")
+		segundajanela.attributes("-topmost",True)
+		button = ctk.CTkButton(segundajanela, text="Selecionar uma imagem", command=open_image).place(x=200, y=20)
+	def leituras_window():
+		thirdjanela = ctk.CTkToplevel()
+		thirdjanela.title("Leituras")
+		thirdjanela.geometry(f"500x500+{posix}+{posiy}")
+		thirdjanela.attributes("-topmost",True)
+	def avaliation_window():
+		thirdjanela = ctk.CTkToplevel()
+		thirdjanela.title("Avaliação")
+		thirdjanela.geometry(f"500x500+{posix}+{posiy}")
+		thirdjanela.attributes("-topmost",True)
+	def config_window():
+		thirdjanela = ctk.CTkToplevel()
+		thirdjanela.title("Configurações")
+		thirdjanela.geometry(f"500x500+{posix}+{posiy}")
+		thirdjanela.attributes("-topmost",True)
+	janela_principal = ctk.CTk()
+	janela_principal.title("Tela principal")
+	janela_principal.after(1,lambda:janela_principal.state("zoomed"))
+
+	#configuração da dimensão da janela
+	janela_altura = 900
+	janela_largura = 1100
+	largura = janela_principal.winfo_screenwidth()
+	altura = janela_principal.winfo_screenheight()
+	posiy = int(altura/2) - int(janela_altura/2)
+	posix = int(largura/2) - int(janela_largura/2)
+	janela_principal.geometry(f"{janela_largura}x{janela_altura}+{posix}+{posiy}")
+
+	#implementação gráfica dos recursos (layout)
+	canvas = ctk.CTkCanvas(janela_principal,width=largura,height=altura,bg="gray",highlightthickness=0)
+	canvas.place(x=0,y=0)
+	canvas.create_rectangle(0,0,300,altura,fill='black',outline="")
+	canvas.create_oval(75,75,225,225,fill="gray",outline="")
+
+	def centraliza(usuario_dados):
+		ctk.CTkLabel(janela_principal,text="Goodreads",font=("Arial",25,"bold"),text_color="white",bg_color="gray").place(x=340,y=25)
+		usuário = str(usuario_dados.iloc[0]['USUARIO']).strip()
+		tamanho_mediu = 10
+		tamanho_usuário2 = len(usuário) * tamanho_mediu
+		pussix = 150 - (tamanho_usuário2//2)
+		nome = str(usuario_dados.iloc[0]['NOME']).strip()
+		tamanho_nome= len(nome) * tamanho_mediu
+		passix = 150 - (tamanho_nome//2)
+		ctk.CTkLabel(janela_principal,text=f"Seja bem vindo, {nome}! Como estão as leituras?",font=("Arial",40,"bold"),text_color="white",bg_color="gray").place(x=340,y=150)
+		ctk.CTkLabel(janela_principal,text=f"@{usuário}",font=("Arial",15),text_color="white",bg_color="black").place(x=pussix,y=275)
+		ctk.CTkLabel(janela_principal,text=f"{nome}",font=("Arial",15),text_color="white",bg_color="black").place(x=passix,y=250)
+	def open_image():
+		file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png;*.jfif")])
+		if file_path:
+			try:
+				img = Image.open(file_path)
+				img = img.resize((250, 250))
+				mask = Image.new("L", img.size, 0)
+				draw = ImageDraw.Draw(mask)
+				draw.ellipse((0, 0, img.size[0], img.size[1]), fill=255)
+				img.putalpha(mask)
+				img_tk = ImageTk.PhotoImage(img)
+				image_label.configure(image=img_tk)
+				image_label.image = img_tk
+			except Exception as e:
+				print(f"Erro ao abrir imagem: ")
+	frame = ctk.CTkFrame(janela_principal, height=300, width=300)
+	frame.place(x=0, y=10)
+	image_label = ctk.CTkLabel(frame,text="",bg_color="black")
+	image_label.place(relwidth=1, relheight=1)
+
+	centraliza(usuario_dados)
+	#botões
+	botao_conta = ctk.CTkButton(janela_principal,text="Conta",fg_color="black",hover_color="gray",bg_color="black",text_color="white",font=("Arial",20,"bold"),command=account_window).place(x=80,y=500)
+	botao_avaliação = ctk.CTkButton(janela_principal,text="Avaliação",fg_color="black",hover_color="gray",bg_color="black",text_color="white",font=("Arial",20,"bold"),command=avaliation_window).place(x=80,y=350)
+	botao_leitura = ctk.CTkButton(janela_principal,text="Leitura",fg_color="black",hover_color="gray",bg_color="black",text_color="white",font=("Arial",20,"bold"),command=leituras_window).place(x=80,y=425)
+	botao_config = ctk.CTkButton(janela_principal,text="Configurações",fg_color="black",hover_color="gray",bg_color="black",text_color="white",font=("Arial",14,"bold"),command=config_window).place(x=150,y=altura-100)
+
+	janelaprincipal.mainloop()
+
+janelainicial()
